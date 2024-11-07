@@ -7,7 +7,7 @@ import { Provider } from "react-redux";
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <BrowserRouter>
+    <BrowserRouter basename="/formula-one-explorer">
       <App />
     </BrowserRouter>
   </Provider>
