@@ -60,7 +60,7 @@ const LineChart = ({ raceResult }: Props) => {
       dataLabels: {
         enabled: true,
         formatter: (
-          val: number,
+          _val: number,
           { dataPointIndex }: { dataPointIndex: number }
         ) => `${drivers[dataPointIndex].status}`,
         style: {
