@@ -12,7 +12,8 @@ import {
   Link,
   Checkbox,
   Pagination,
-  Paper,
+  SxProps,
+  Theme,
 } from "@mui/material";
 import { PushPin, PushPinOutlined } from "@mui/icons-material";
 import { ListProps } from "../types/Props.types";
@@ -26,7 +27,7 @@ const CardView = <T,>({
 }: ListProps<T>) => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  const cardsPerPage = 12;
+  const cardsPerPage = 15;
   const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
@@ -49,12 +50,13 @@ const CardView = <T,>({
   };
 
   return (
-    <Paper>
+    <div>
       <Stack
         spacing={3}
         direction="row"
         useFlexGap
         sx={{ flexWrap: "wrap", justifyContent: "center" }}
+        mb={4}
       >
         {sortCards().map((card, index) => (
           <Card sx={{ maxWidth: 400, minWidth: 250 }} key={index}>
@@ -65,12 +67,23 @@ const CardView = <T,>({
                   maxWidth: 360,
                 }}
               >
-                {Object.keys(headings).map((key) => {
+                {Object.keys(headings).map((key, index) => {
                   const value = String(card[key as keyof T]);
+                  const textStyles: SxProps<Theme> =
+                    index === 0
+                      ? {
+                          "& p": {
+                            fontSize: "1.5rem",
+                            fontWeight: "bold",
+                            color: "#9d1414",
+                          },
+                        }
+                      : {};
                   return (
                     <ListItem key={key}>
                       <ListItemText
                         primary={headings[key]}
+                        sx={{ ...textStyles }}
                         secondary={
                           key === "url" ? (
                             <Link
@@ -97,12 +110,14 @@ const CardView = <T,>({
             >
               <Button
                 size="small"
-                color="primary"
-                variant="outlined"
+                variant="contained"
                 onClick={() => {
                   navigate(
                     `${itemClick?.link}/${card[itemClick?.key as keyof T]}`
                   );
+                }}
+                sx={{
+                  backgroundColor: "#9d1414",
                 }}
               >
                 View Details
@@ -118,7 +133,7 @@ const CardView = <T,>({
                     itemPin.click(String(card[itemPin.key as keyof T]));
                   }}
                   icon={<PushPinOutlined />}
-                  checkedIcon={<PushPin />}
+                  checkedIcon={<PushPin sx={{ color: "#9d1414" }} />}
                 />
               )}
             </CardActions>
@@ -126,17 +141,16 @@ const CardView = <T,>({
         ))}
       </Stack>
       {data.length > cardsPerPage && (
-        <Stack spacing={2}>
+        <Stack spacing={2} alignItems="center" mb={4}>
           <Pagination
             count={Math.ceil(data.length / cardsPerPage)}
-            variant="outlined"
-            color="secondary"
+            shape="rounded"
             page={page}
             onChange={handleChange}
           />
         </Stack>
       )}
-    </Paper>
+    </div>
   );
 };
 

@@ -10,31 +10,29 @@ interface Season {
 
 interface SeasonsState {
   seasons: Season[];
-  total: number;
-  offset: number;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: SeasonsState = {
   seasons: [],
-  total: 0,
-  offset: 0,
   loading: false,
   error: null,
 };
 
 export const fetchSeasons = createAsyncThunk(
   "seasons/fetchSeasons",
-  async (offset: number, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(
-        `${API}seasons.json?limit=20&offset=${offset}`
-      );
+      const response = await axios.get(`${API}seasons.json?limit=150`);
 
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.message) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue("An unknown error occurred");
+      }
     }
   }
 );
@@ -42,11 +40,7 @@ export const fetchSeasons = createAsyncThunk(
 const seasonsSlice = createSlice({
   name: "seasons",
   initialState,
-  reducers: {
-    incrementOffset: (state) => {
-      state.offset += 20;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchSeasons.pending, (state) => {
@@ -59,7 +53,6 @@ const seasonsSlice = createSlice({
           ...state.seasons,
           ...action.payload.MRData.SeasonTable.Seasons,
         ];
-        state.total = parseInt(action.payload.MRData.total, 10);
       })
       .addCase(fetchSeasons.rejected, (state, action) => {
         state.loading = false;
@@ -68,6 +61,5 @@ const seasonsSlice = createSlice({
   },
 });
 
-export const { incrementOffset } = seasonsSlice.actions;
 export const selectSeasons = (state: RootState) => state.seasons;
 export default seasonsSlice.reducer;

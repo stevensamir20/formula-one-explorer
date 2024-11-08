@@ -9,15 +9,21 @@ function App() {
   return (
     <>
       <Navbar />
-      <Routes>
-        <Route path="" element={<Home />} />
-        <Route path="seasons/:seasonId" element={<SeasonDetails />} />
-        <Route
-          path="seasons/:seasonId/races/:raceId"
-          element={<RaceDetails />}
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <section
+        style={{
+          padding: "0 70px",
+        }}
+      >
+        <Routes>
+          <Route path="" element={<Home />} />
+          <Route path="seasons/:seasonId" element={<SeasonDetails />} />
+          <Route
+            path="seasons/:seasonId/races/:raceId"
+            element={<RaceDetails />}
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </section>
     </>
   );
 }

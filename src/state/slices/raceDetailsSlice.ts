@@ -6,12 +6,14 @@ import { API } from "../../config/apiConfig";
 
 interface RaceDetailsState {
   raceResult: RaceResult[];
+  raceName: string;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: RaceDetailsState = {
   raceResult: [],
+  raceName: "",
   loading: false,
   error: null,
 };
@@ -27,8 +29,12 @@ export const fetchRaceDetails = createAsyncThunk(
         `${API}${seasonId}/${raceId}/results.json`
       );
       return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.message) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue("An unknown error occurred");
+      }
     }
   }
 );
@@ -47,6 +53,7 @@ const raceDetailsSlice = createSlice({
         const raceData: RaceResult[] =
           action.payload.MRData.RaceTable.Races[0].Results;
         state.raceResult = raceData;
+        state.raceName = action.payload.MRData.RaceTable.Races[0].raceName;
         state.loading = false;
       })
       .addCase(fetchRaceDetails.rejected, (state, action) => {

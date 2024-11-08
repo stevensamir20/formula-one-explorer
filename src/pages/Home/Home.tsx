@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../state/store";
-import {
-  fetchSeasons,
-  incrementOffset,
-  selectSeasons,
-} from "../../state/slices/seasonsSlice";
+import { fetchSeasons, selectSeasons } from "../../state/slices/seasonsSlice";
 
 // Components
 import { Alert } from "@mui/material";
@@ -18,20 +14,15 @@ const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [view, setView] = useState<string>("table");
 
-  const { seasons, total, offset, loading, error } = useSelector(
-    (state: RootState) => selectSeasons(state)
+  const { seasons, loading, error } = useSelector((state: RootState) =>
+    selectSeasons(state)
   );
 
   useEffect(() => {
     if (seasons.length === 0) {
-      dispatch(fetchSeasons(0));
+      dispatch(fetchSeasons());
     }
-  }, [dispatch]);
-
-  const showMoreSeasons = () => {
-    dispatch(incrementOffset());
-    dispatch(fetchSeasons(offset + 20));
-  };
+  }, [dispatch, seasons.length]);
 
   const changeView = (_event: React.MouseEvent<HTMLElement>, value: string) => {
     setView(value);
@@ -43,11 +34,6 @@ const Home: React.FC = () => {
       {seasons.length !== 0 && (
         <Container
           title="Seasons"
-          button={{
-            show: seasons.length < total,
-            onClick: showMoreSeasons,
-            loading: loading,
-          }}
           view={{
             value: view,
             onChange: changeView,
@@ -55,7 +41,7 @@ const Home: React.FC = () => {
         >
           {view === "table" ? (
             <TableComponent
-              headings={{ season: "Season", url: "Information" }}
+              headings={{ season: "Races of", url: "Wikipedia Information" }}
               data={seasons}
               itemClick={{
                 key: "season",

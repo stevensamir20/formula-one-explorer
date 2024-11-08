@@ -1,13 +1,12 @@
 import {
   Stack,
-  Button,
   Typography,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
 import { ContainerProps } from "../types/Props.types";
 
-const Container = ({ children, view, title, button }: ContainerProps) => {
+const Container = ({ children, view, title }: ContainerProps) => {
   return (
     <Stack spacing={2} alignItems="center" mt={5}>
       <Stack
@@ -16,13 +15,14 @@ const Container = ({ children, view, title, button }: ContainerProps) => {
         alignItems="center"
         width="100%"
       >
-        <Typography variant="h5" component="div">
+        <Typography variant="h2" className="container-title">
           {title}
         </Typography>
         <ToggleButtonGroup
           value={view.value}
           exclusive
           onChange={(event, value) => view.onChange(event, value)}
+          className="toggle-buttons"
         >
           <ToggleButton value="table" aria-label="table" size="small">
             Table View
@@ -33,17 +33,6 @@ const Container = ({ children, view, title, button }: ContainerProps) => {
         </ToggleButtonGroup>
       </Stack>
       {children}
-      {button.show && (
-        <Button
-          variant="outlined"
-          color="primary"
-          sx={{ width: "200px" }}
-          onClick={button.onClick}
-          disabled={button.loading}
-        >
-          {button.loading ? "Loading..." : " Show More"}
-        </Button>
-      )}
     </Stack>
   );
 };

@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import {
   fetchRaces,
-  incrementOffset,
   togglePin,
   selectSeasonDetails,
 } from "../../state/slices/seasonDetailsSlice";
@@ -25,8 +24,6 @@ const SeasonDetails: React.FC = () => {
   );
   const {
     races = [],
-    total = 0,
-    offset = 0,
     loading = false,
     error,
     pinnedRaces = [],
@@ -36,16 +33,9 @@ const SeasonDetails: React.FC = () => {
 
   useEffect(() => {
     if (seasonId && races.length === 0) {
-      dispatch(fetchRaces({ seasonId, offset: 0 }));
+      dispatch(fetchRaces({ seasonId }));
     }
   }, [dispatch, seasonId, races.length]);
-
-  const showMoreRaces = () => {
-    if (seasonId) {
-      dispatch(incrementOffset(seasonId));
-      dispatch(fetchRaces({ seasonId, offset: offset + 20 }));
-    }
-  };
 
   const handleRacePin = (raceId: string) => {
     if (seasonId) dispatch(togglePin({ seasonId, raceId }));
@@ -60,12 +50,7 @@ const SeasonDetails: React.FC = () => {
       {loading && <Loader />}
       {races.length !== 0 && (
         <Container
-          title={`Season ${seasonId} Races`}
-          button={{
-            show: races.length < total,
-            loading: loading,
-            onClick: showMoreRaces,
-          }}
+          title={`${seasonId}'s Races`}
           view={{
             value: view,
             onChange: changeView,

@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
 import { RaceResult } from "../types/RaceDetails.types";
-import { Alert } from "@mui/material";
 
 interface Props {
   drivers: string[];
@@ -105,18 +104,15 @@ const RadarChart = ({ drivers, raceResult }: Props) => {
   };
 
   if (drivers.length === 0) {
-    return (
-      <Alert severity="info">
-        Highlight drivers to see the performace chart!
-      </Alert>
-    );
+    return;
   }
+
   return (
     <ReactApexChart
       options={options}
       series={series}
       type="radar"
-      width={500}
+      width={600}
       height={400}
     />
   );

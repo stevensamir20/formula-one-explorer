@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
 import {
@@ -9,11 +9,12 @@ import {
 import { RaceRow } from "../../types/RaceDetails.types";
 
 // Components
-import { Alert, Stack } from "@mui/material";
+import { Alert, Breadcrumbs, Stack, Typography } from "@mui/material";
 import TableComponent from "../../components/TableComponent";
 import Loader from "../../components/Loader";
 import LineChart from "../../components/LineChart";
 import RadarChart from "../../components/RadarChart";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 const RaceDetails: React.FC = () => {
   const { seasonId, raceId } = useParams<{
@@ -22,8 +23,8 @@ const RaceDetails: React.FC = () => {
   }>();
   const dispatch = useDispatch<AppDispatch>();
 
-  const { raceResult, loading, error } = useSelector((state: RootState) =>
-    selectRaceDetails(state)
+  const { raceResult, raceName, loading, error } = useSelector(
+    (state: RootState) => selectRaceDetails(state)
   );
 
   const [raceRows, setRaceRows] = useState<RaceRow[]>([]);
@@ -65,14 +66,42 @@ const RaceDetails: React.FC = () => {
     <>
       {loading && <Loader />}
       {raceRows.length !== 0 && (
-        <Stack spacing={6} alignItems="center" mt={5}>
+        <Stack spacing={4} mt={5}>
+          <Stack>
+            <Typography variant="h2" className="container-title">
+              {raceName}
+            </Typography>
+            <Breadcrumbs
+              separator={<NavigateNextIcon fontSize="small" />}
+              aria-label="breadcrumb"
+            >
+              <Link
+                style={{
+                  color: "black",
+                }}
+                to="/"
+              >
+                Seasons
+              </Link>
+              <Link
+                style={{
+                  color: "black",
+                }}
+                to={`/seasons/${seasonId}`}
+              >
+                {seasonId} Races
+              </Link>
+              <Typography sx={{ color: "#9d1414" }}>{raceName}</Typography>
+            </Breadcrumbs>
+          </Stack>
+
           <TableComponent
             headings={{
-              pin: "Highlight",
+              position: "Position",
               driverName: "Driver Name",
               nationality: "Nationality",
               team: "Team",
-              position: "Position",
+              pin: "Highlight",
             }}
             data={raceRows}
             itemPin={{
@@ -83,11 +112,18 @@ const RaceDetails: React.FC = () => {
             }}
             pinnedItems={pinnedDrivers}
           />
+          {pinnedDrivers.length === 0 && raceResult.length !== 0 && (
+            <Alert severity="error">
+              Highlight drivers from the table to see their performace chart!
+            </Alert>
+          )}
+
           {raceResult.length !== 0 && (
             <Stack
-              direction={{ xs: "column", md: "row" }}
-              spacing={6}
+              direction={{ md: "column", lg: "row" }}
               alignItems="center"
+              justifyContent="center"
+              spacing={8}
             >
               <LineChart raceResult={raceResult} />
               <RadarChart raceResult={raceResult} drivers={pinnedDrivers} />

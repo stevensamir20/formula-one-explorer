@@ -7,8 +7,6 @@ import { API } from "../../config/apiConfig";
 interface SeasonRaces {
   races: RaceState[];
   pinnedRaces: string[];
-  total: number;
-  offset: number;
   loading: boolean;
   error: string | null;
 }
@@ -28,18 +26,19 @@ const persistedPinnedRaces = loadPinnedRacesFromLocalStorage();
 
 export const fetchRaces = createAsyncThunk(
   "seasonDetails/fetchRaces",
-  async (
-    { seasonId, offset }: { seasonId: string; offset: number },
-    { rejectWithValue }
-  ) => {
+  async ({ seasonId }: { seasonId: string }, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${API}${seasonId}/races.json?limit=20&offset=${offset}`
+        `${API}${seasonId}/races.json?limit=150`
       );
 
       return { seasonId, data: response.data };
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.message) {
+        return rejectWithValue(error.message);
+      } else {
+        return rejectWithValue("An unknown error occurred");
+      }
     }
   }
 );
@@ -48,13 +47,6 @@ const seasonDetailsSlice = createSlice({
   name: "seasonDetails",
   initialState,
   reducers: {
-    incrementOffset: (state, action: PayloadAction<string>) => {
-      const seasonId = action.payload;
-
-      if (state[seasonId]) {
-        state[seasonId].offset += 20;
-      }
-    },
     togglePin: (
       state,
       action: PayloadAction<{ seasonId: string; raceId: string }>
@@ -86,8 +78,6 @@ const seasonDetailsSlice = createSlice({
           state[seasonId] = {
             races: [],
             pinnedRaces: persistedPinnedRaces[seasonId] || [],
-            total: 0,
-            offset: 0,
             loading: true,
             error: null,
           };
@@ -112,7 +102,6 @@ const seasonDetailsSlice = createSlice({
         state[seasonId] = {
           ...state[seasonId],
           races: [...state[seasonId].races, ...newRaces],
-          total: parseInt(data.MRData.total, 10),
           loading: false,
         };
       })
@@ -124,7 +113,7 @@ const seasonDetailsSlice = createSlice({
   },
 });
 
-export const { incrementOffset, togglePin } = seasonDetailsSlice.actions;
+export const { togglePin } = seasonDetailsSlice.actions;
 export const selectSeasonDetails = (state: RootState, seasonId: string) =>
   state.seasonDetails[seasonId];
 export default seasonDetailsSlice.reducer;

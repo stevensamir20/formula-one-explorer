@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { styled } from "@mui/material/styles";
 import {
   Table,
   TableBody,
@@ -9,11 +10,35 @@ import {
   TableRow,
   TablePagination,
   Paper,
-  Link,
   Checkbox,
+  IconButton,
 } from "@mui/material";
-import { PushPin, PushPinOutlined } from "@mui/icons-material";
+import { PushPin, PushPinOutlined, OpenInNew } from "@mui/icons-material";
+import { tableCellClasses } from "@mui/material/TableCell";
 import { ListProps } from "../types/Props.types";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#9d1414",
+    color: theme.palette.common.white,
+    fontStyle: "italic",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(() => ({
+  // "&:nth-of-type(odd)": {
+  //   backgroundColor: "#c7c7c7",
+  // },
+
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 const TableComponent = <T,>({
   headings,
@@ -54,25 +79,32 @@ const TableComponent = <T,>({
     );
   };
 
+  const openWikipedia = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    url: string
+  ) => {
+    e.stopPropagation();
+    window.open(url, "_blank");
+  };
+
   return (
-    <Paper sx={{ width: "100%" }}>
+    <div style={{ width: "100%" }}>
       <TableContainer component={Paper} sx={{ maxHeight: 450 }}>
         <Table stickyHeader aria-label="Data Table">
           <TableHead>
             <TableRow>
               {Object.keys(headings).map((columnKey) => (
-                <TableCell key={columnKey} align="center">
+                <StyledTableCell key={columnKey} align="center">
                   {headings[columnKey]}
-                </TableCell>
+                </StyledTableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {sortRows().map((row, index) => (
-              <TableRow
+              <StyledTableRow
                 key={index}
                 sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
                   cursor: itemClick ? "pointer" : "default",
                 }}
                 hover={itemClick ? true : false}
@@ -87,20 +119,15 @@ const TableComponent = <T,>({
                 {Object.keys(headings).map((columnKey) => {
                   const rowValue = String(row[columnKey as keyof T]);
                   return (
-                    <TableCell key={columnKey} align="center">
+                    <StyledTableCell key={columnKey} align="center">
                       {columnKey === "url" ? (
-                        <Link
-                          href={rowValue}
-                          underline="none"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          sx={{ color: "blue", "&:hover": { color: "red" } }}
+                        <IconButton
                           onClick={(e) => {
-                            e.stopPropagation();
+                            openWikipedia(e, rowValue);
                           }}
                         >
-                          {rowValue.split("/").pop()}
-                        </Link>
+                          <OpenInNew />
+                        </IconButton>
                       ) : itemPin && columnKey === "pin" ? (
                         <Checkbox
                           checked={
@@ -115,21 +142,21 @@ const TableComponent = <T,>({
                             e.stopPropagation();
                           }}
                           icon={<PushPinOutlined />}
-                          checkedIcon={<PushPin />}
+                          checkedIcon={<PushPin sx={{ color: "#9d1414" }} />}
                         />
                       ) : (
                         rowValue
                       )}
-                    </TableCell>
+                    </StyledTableCell>
                   );
                 })}
-              </TableRow>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[10, 25, { label: "All", value: -1 }]}
+        rowsPerPageOptions={[10, 25, { label: "All", value: data.length }]}
         component="div"
         count={data.length}
         rowsPerPage={rowsPerPage}
@@ -137,7 +164,7 @@ const TableComponent = <T,>({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Paper>
+    </div>
   );
 };
 
