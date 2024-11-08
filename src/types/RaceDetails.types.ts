@@ -6,7 +6,6 @@ export interface RaceRow {
   position: string;
   laps: string;
   status: string;
-  pin: boolean;
 }
 
 export interface RaceResult {
@@ -29,15 +28,5 @@ export interface RaceResult {
   Time: {
     millis: string;
     time: string;
-  };
-}
-
-export interface FetchData {
-  MRData: {
-    RaceTable: {
-      Races: Array<{
-        Results: RaceResult[];
-      }>;
-    };
   };
 }

@@ -1,57 +1,54 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
-import { RaceState, FetchData, Race } from "../../types/SeasonDetails.types";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
+import {
+  fetchRaces,
+  incrementOffset,
+  togglePin,
+  selectSeasonDetails,
+} from "../../state/slices/seasonDetailsSlice";
+
+// Components
 import { Alert } from "@mui/material";
 import TableComponent from "../../components/TableComponent";
 import Loader from "../../components/Loader";
 import Container from "../../components/Container";
 import CardView from "../../components/CardView";
 
-const SeasonDetails = () => {
+const SeasonDetails: React.FC = () => {
   const { seasonId } = useParams<{ seasonId: string }>();
-  const [races, setRaces] = useState<RaceState[]>([]);
-  const [offset, setOffset] = useState(0);
-  const [total, setTotal] = useState<number>(0);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const seasonDetails = useSelector((state: RootState) =>
+    seasonId ? selectSeasonDetails(state, seasonId) : undefined
+  );
+  const {
+    races = [],
+    total = 0,
+    offset = 0,
+    loading = false,
+    error,
+    pinnedRaces = [],
+  } = seasonDetails || {};
+
   const [view, setView] = useState<string>("table");
 
-  const { data, error, loading } = useFetch(
-    `${seasonId}/races.json?limit=20&offset=${offset}`
-  );
-
   useEffect(() => {
-    if (data) {
-      const racesData: Race[] = (data as FetchData).MRData.RaceTable.Races;
-      const newRaces = racesData.map((race) => ({
-        raceId: race.round,
-        raceName: race.raceName,
-        circuitName: race.Circuit.circuitName,
-        date: new Date(race.date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-        pin: false,
-      }));
-      setRaces((prevRaces) => [...prevRaces, ...newRaces]);
-      setTotal(parseInt((data as FetchData).MRData.total, 10));
+    if (seasonId && races.length === 0) {
+      dispatch(fetchRaces({ seasonId, offset: 0 }));
     }
-  }, [data]);
-
-  const handleRacePin = (raceId: string) => {
-    setRaces((prevRaces) => {
-      const updatedRaces = prevRaces.map((race) =>
-        race.raceId === raceId ? { ...race, pin: !race.pin } : race
-      );
-      const pinnedRaces = updatedRaces.filter((race) => race.pin);
-      const unpinnedRaces = updatedRaces.filter((race) => !race.pin);
-
-      return [...pinnedRaces, ...unpinnedRaces];
-    });
-  };
+  }, [dispatch, seasonId, races.length]);
 
   const showMoreRaces = () => {
-    setOffset((prevOffset) => prevOffset + 20);
+    if (seasonId) {
+      dispatch(incrementOffset(seasonId));
+      dispatch(fetchRaces({ seasonId, offset: offset + 20 }));
+    }
+  };
+
+  const handleRacePin = (raceId: string) => {
+    if (seasonId) dispatch(togglePin({ seasonId, raceId }));
   };
 
   const changeView = (_event: React.MouseEvent<HTMLElement>, value: string) => {
@@ -76,23 +73,22 @@ const SeasonDetails = () => {
         >
           {view === "table" ? (
             <TableComponent
-              columns={{
-                pin: "Pin",
+              headings={{
+                pin: "",
                 raceName: "Race Name",
                 circuitName: "Circuit Name",
                 date: "Date",
               }}
               data={races}
-              rowClick={{
+              itemClick={{
                 key: "raceId",
                 link: "races",
               }}
-              rowPin={{
+              itemPin={{
                 key: "raceId",
-                click: (raceId: string) => {
-                  handleRacePin(raceId);
-                },
+                click: handleRacePin,
               }}
+              pinnedItems={pinnedRaces}
             />
           ) : (
             <CardView
@@ -101,18 +97,16 @@ const SeasonDetails = () => {
                 circuitName: "Circuit Name",
                 date: "Date",
               }}
-              cardClick={{
+              itemClick={{
                 key: "raceId",
                 link: "races",
               }}
-              cardPin={{
-                value: "pin",
+              itemPin={{
                 key: "raceId",
-                click: (raceId: string) => {
-                  handleRacePin(raceId);
-                },
+                click: handleRacePin,
               }}
               data={races}
+              pinnedItems={pinnedRaces}
             />
           )}
         </Container>

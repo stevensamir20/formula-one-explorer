@@ -1,9 +1,9 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home/Home";
-import SeasonDetails from "./pages/SeasonDetails/SeasonDetails";
-import RaceDetails from "./pages/RaceDetails/RaceDetails";
-import NotFound from "./pages/NotFound/NotFound";
+import Home from "./pages/home/Home";
+import SeasonDetails from "./pages/seasonDetails/SeasonDetails";
+import RaceDetails from "./pages/raceDetails/RaceDetails";
+import NotFound from "./pages/notFound/NotFound";
 import Navbar from "./components/Navbar";
 
 function App() {

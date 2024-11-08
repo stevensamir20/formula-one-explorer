@@ -1,33 +1,40 @@
-import { useState, useEffect } from "react";
-import useFetch from "../../hooks/useFetch";
-import { Season, FetchData } from "../../types/Home.types";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../state/store";
+import {
+  fetchSeasons,
+  incrementOffset,
+  selectSeasons,
+} from "../../state/slices/seasonsSlice";
+
+// Components
 import { Alert } from "@mui/material";
 import TableComponent from "../../components/TableComponent";
 import Loader from "../../components/Loader";
 import Container from "../../components/Container";
 import CardView from "../../components/CardView";
 
-const Home = () => {
-  const [seasons, setSeasons] = useState<Season[]>([]);
-  const [offset, setOffset] = useState(0);
-  const [total, setTotal] = useState<number>(0);
+const Home: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [view, setView] = useState<string>("table");
 
-  const { data, error, loading } = useFetch(
-    `seasons.json?limit=20&offset=${offset}`
-  );
+  const {
+    data: seasons,
+    total,
+    offset,
+    loading,
+    error,
+  } = useSelector((state: RootState) => selectSeasons(state));
 
   useEffect(() => {
-    if (data) {
-      const newSeasons: Season[] = (data as FetchData).MRData.SeasonTable
-        .Seasons;
-      setSeasons((prevSeasons) => [...prevSeasons, ...newSeasons]);
-      setTotal(parseInt((data as FetchData).MRData.total, 10));
+    if (seasons.length === 0) {
+      dispatch(fetchSeasons(0));
     }
-  }, [data]);
+  }, [dispatch]);
 
   const showMoreSeasons = () => {
-    setOffset((prevOffset) => prevOffset + 20);
+    dispatch(incrementOffset());
+    dispatch(fetchSeasons(offset + 20));
   };
 
   const changeView = (_event: React.MouseEvent<HTMLElement>, value: string) => {
@@ -52,9 +59,9 @@ const Home = () => {
         >
           {view === "table" ? (
             <TableComponent
-              columns={{ season: "Season", url: "Information" }}
+              headings={{ season: "Season", url: "Information" }}
               data={seasons}
-              rowClick={{
+              itemClick={{
                 key: "season",
                 link: "seasons",
               }}
@@ -63,7 +70,7 @@ const Home = () => {
             <CardView
               headings={{ season: "Season", url: "Information" }}
               data={seasons}
-              cardClick={{
+              itemClick={{
                 key: "season",
                 link: "seasons",
               }}

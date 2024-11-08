@@ -1,25 +1,13 @@
-import React from "react";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import {
+  Stack,
+  Button,
+  Typography,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
+import { ContainerProps } from "../types/Props.types";
 
-type Props = {
-  children: React.ReactNode;
-  title: string;
-  button: {
-    show: boolean;
-    onClick: () => void;
-    loading: boolean;
-  };
-  view: {
-    value: string;
-    onChange: (event: React.MouseEvent<HTMLElement>, value: string) => void;
-  };
-};
-
-const Container = ({ children, view, title, button }: Props) => {
+const Container = ({ children, view, title, button }: ContainerProps) => {
   return (
     <Stack spacing={2} alignItems="center" mt={5}>
       <Stack

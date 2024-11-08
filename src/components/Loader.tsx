@@ -1,6 +1,4 @@
-import Stack from "@mui/material/Stack";
-import LinearProgress from "@mui/material/LinearProgress";
-import Backdrop from "@mui/material/Backdrop";
+import { Stack, LinearProgress, Backdrop } from "@mui/material";
 
 const Loader = () => {
   return (

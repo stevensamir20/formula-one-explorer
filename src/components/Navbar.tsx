@@ -1,14 +1,9 @@
 import { Link, useLocation, matchPath } from "react-router-dom";
-import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import { Box, AppBar, Toolbar, Button, Typography } from "@mui/material";
 
 const Navbar = () => {
   const location = useLocation();
 
-  // Check if we are at the /seasons/:seasonId/races/:raceId path
   const match = matchPath(
     "/seasons/:seasonId/races/:raceId",
     location.pathname

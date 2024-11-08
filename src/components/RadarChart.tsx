@@ -4,7 +4,7 @@ import { RaceResult } from "../types/RaceDetails.types";
 import { Alert } from "@mui/material";
 
 type Props = {
-  drivers: RaceResult[];
+  drivers: string[];
   raceResult: RaceResult[];
 };
 
@@ -23,7 +23,13 @@ const RadarChart = ({ drivers, raceResult }: Props) => {
   );
   const numberOfDrivers = useMemo(() => raceResult.length, [raceResult]);
 
-  const series = drivers.map((driver) => ({
+  const pinnedDrivers = useMemo(
+    () =>
+      raceResult.filter((result) => drivers.includes(result.Driver.driverId)),
+    [drivers, raceResult]
+  );
+
+  const series = pinnedDrivers.map((driver) => ({
     name: driver.Driver.givenName + " " + driver.Driver.familyName,
     data: [
       (parseInt(driver.laps) / highestLaps) * 100,
@@ -57,15 +63,13 @@ const RadarChart = ({ drivers, raceResult }: Props) => {
           },
         },
         formatter: function (
-          val: number,
+          _val: number,
           {
             seriesIndex,
             dataPointIndex,
           }: { seriesIndex: number; dataPointIndex: number }
         ) {
-          console.log(val);
-
-          const driver = drivers[seriesIndex];
+          const driver = pinnedDrivers[seriesIndex];
 
           let label = "";
           if (dataPointIndex === 0) {
@@ -78,9 +82,7 @@ const RadarChart = ({ drivers, raceResult }: Props) => {
             label = `Race Position: ${driver.position}`;
           }
 
-          return `Driver: ${
-            driver.Driver.familyName
-          }<br>${label} (${val.toFixed()}%)
+          return `Driver: ${driver.Driver.familyName}<br>${label}
           `;
         },
       },

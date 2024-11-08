@@ -1,7 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
-import { RaceResult, RaceRow, FetchData } from "../../types/RaceDetails.types";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../state/store";
+import {
+  fetchRaceDetails,
+  selectRaceDetails,
+} from "../../state/slices/raceDetailsSlice";
+import { RaceRow } from "../../types/RaceDetails.types";
+
+// Components
 import { Alert, Stack } from "@mui/material";
 import TableComponent from "../../components/TableComponent";
 import Loader from "../../components/Loader";
@@ -13,24 +20,22 @@ const RaceDetails = () => {
     seasonId: string;
     raceId: string;
   }>();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [raceResult, setRaceResult] = useState<RaceResult[]>([]);
+  const { raceResult, loading, error } = useSelector((state: RootState) =>
+    selectRaceDetails(state)
+  );
+
   const [raceRows, setRaceRows] = useState<RaceRow[]>([]);
-  const [highlightedDrivers, setHighlightedDrivers] = useState<RaceResult[]>(
-    []
-  );
-
-  const { data, error, loading } = useFetch(
-    `${seasonId}/${raceId}/results.json`
-  );
+  const [pinnedDrivers, setPinnedDrivers] = useState<string[]>([]);
 
   useEffect(() => {
-    if (data) {
-      const raceData: RaceResult[] = (data as FetchData).MRData.RaceTable
-        .Races[0].Results;
-      setRaceResult(raceData);
+    if (seasonId && raceId && !raceResult.length) {
+      dispatch(fetchRaceDetails({ seasonId, raceId }));
+    }
 
-      const raceRows = raceData
+    if (raceResult.length > 0) {
+      const raceRows = raceResult
         .map((result) => ({
           driverId: result.Driver.driverId,
           driverName: `${result.Driver.givenName} ${result.Driver.familyName}`,
@@ -39,36 +44,19 @@ const RaceDetails = () => {
           position: result.position,
           laps: result.laps,
           status: result.status,
-          pin: false,
         }))
         .sort((a, b) => parseInt(a.position) - parseInt(b.position));
       setRaceRows(raceRows);
     }
-  }, [data]);
+  }, [dispatch, raceResult, seasonId, raceId]);
 
-  const handleDriverHighlight = (driverId: string) => {
-    setRaceRows((prevRaceRows) =>
-      prevRaceRows.map((row) =>
-        row.driverId === driverId ? { ...row, pin: !row.pin } : row
-      )
-    );
-
-    setHighlightedDrivers((prevHighlightedDrivers) => {
-      const isHighlighted = prevHighlightedDrivers.some(
-        (driver) => driver.Driver.driverId === driverId
-      );
-      if (isHighlighted) {
-        return prevHighlightedDrivers.filter(
-          (driver) => driver.Driver.driverId !== driverId
-        );
+  const handleDriverPin = (driverId: string) => {
+    setPinnedDrivers((prev: string[]) => {
+      const isPinned = prev.includes(driverId);
+      if (isPinned) {
+        return prev.filter((id) => id !== driverId);
       } else {
-        const driver = raceResult.find(
-          (result) => result.Driver.driverId === driverId
-        );
-        if (driver) {
-          return [...prevHighlightedDrivers, driver];
-        }
-        return prevHighlightedDrivers;
+        return [...prev, driverId];
       }
     });
   };
@@ -79,7 +67,7 @@ const RaceDetails = () => {
       {raceRows.length !== 0 && (
         <Stack spacing={6} alignItems="center" mt={5}>
           <TableComponent
-            columns={{
+            headings={{
               pin: "Highlight",
               driverName: "Driver Name",
               nationality: "Nationality",
@@ -87,12 +75,13 @@ const RaceDetails = () => {
               position: "Position",
             }}
             data={raceRows}
-            rowPin={{
+            itemPin={{
               key: "driverId",
               click: (driverId: string) => {
-                handleDriverHighlight(driverId);
+                handleDriverPin(driverId);
               },
             }}
+            pinnedItems={pinnedDrivers}
           />
           {raceResult.length !== 0 && (
             <Stack
@@ -101,10 +90,7 @@ const RaceDetails = () => {
               alignItems="center"
             >
               <LineChart raceResult={raceResult} />
-              <RadarChart
-                raceResult={raceResult}
-                drivers={highlightedDrivers}
-              />
+              <RadarChart raceResult={raceResult} drivers={pinnedDrivers} />
             </Stack>
           )}
         </Stack>

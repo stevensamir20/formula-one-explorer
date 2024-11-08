@@ -3,7 +3,6 @@ export interface RaceState {
   raceName: string;
   circuitName: string;
   date: string;
-  pin: boolean;
 }
 
 export interface Race {
@@ -13,13 +12,4 @@ export interface Race {
     circuitName: string;
   };
   date: string;
-}
-
-export interface FetchData {
-  MRData: {
-    RaceTable: {
-      Races: Race[];
-    };
-    total: string;
-  };
 }
