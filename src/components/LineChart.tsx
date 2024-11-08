@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { RaceResult } from "../types/RaceDetails.types";
 
-type Props = {
+interface Props {
   raceResult: RaceResult[];
-};
+}
 
 const LineChart = ({ raceResult }: Props) => {
   const [drivers, setDrivers] = useState<

@@ -18,13 +18,9 @@ const Home: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [view, setView] = useState<string>("table");
 
-  const {
-    data: seasons,
-    total,
-    offset,
-    loading,
-    error,
-  } = useSelector((state: RootState) => selectSeasons(state));
+  const { seasons, total, offset, loading, error } = useSelector(
+    (state: RootState) => selectSeasons(state)
+  );
 
   useEffect(() => {
     if (seasons.length === 0) {

@@ -30,15 +30,8 @@ export const fetchRaces = createAsyncThunk(
   "seasonDetails/fetchRaces",
   async (
     { seasonId, offset }: { seasonId: string; offset: number },
-    { getState, rejectWithValue }
+    { rejectWithValue }
   ) => {
-    const state = getState() as RootState;
-    const seasonData = state.seasonDetails[seasonId];
-
-    if (seasonData && seasonData.races.length > offset) {
-      return rejectWithValue("Offset already fetched");
-    }
-
     try {
       const response = await axios.get(
         `${API}${seasonId}/races.json?limit=20&offset=${offset}`
@@ -132,8 +125,6 @@ const seasonDetailsSlice = createSlice({
 });
 
 export const { incrementOffset, togglePin } = seasonDetailsSlice.actions;
-
 export const selectSeasonDetails = (state: RootState, seasonId: string) =>
   state.seasonDetails[seasonId];
-
 export default seasonDetailsSlice.reducer;

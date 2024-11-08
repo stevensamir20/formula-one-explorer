@@ -9,7 +9,7 @@ interface Season {
 }
 
 interface SeasonsState {
-  data: Season[];
+  seasons: Season[];
   total: number;
   offset: number;
   loading: boolean;
@@ -17,7 +17,7 @@ interface SeasonsState {
 }
 
 const initialState: SeasonsState = {
-  data: [],
+  seasons: [],
   total: 0,
   offset: 0,
   loading: false,
@@ -55,8 +55,8 @@ const seasonsSlice = createSlice({
       })
       .addCase(fetchSeasons.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = [
-          ...state.data,
+        state.seasons = [
+          ...state.seasons,
           ...action.payload.MRData.SeasonTable.Seasons,
         ];
         state.total = parseInt(action.payload.MRData.total, 10);

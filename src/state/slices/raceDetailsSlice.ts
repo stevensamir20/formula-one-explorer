@@ -57,5 +57,4 @@ const raceDetailsSlice = createSlice({
 });
 
 export const selectRaceDetails = (state: RootState) => state.raceDetails;
-
 export default raceDetailsSlice.reducer;

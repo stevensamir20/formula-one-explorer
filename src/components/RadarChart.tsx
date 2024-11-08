@@ -3,10 +3,10 @@ import ReactApexChart from "react-apexcharts";
 import { RaceResult } from "../types/RaceDetails.types";
 import { Alert } from "@mui/material";
 
-type Props = {
+interface Props {
   drivers: string[];
   raceResult: RaceResult[];
-};
+}
 
 const RadarChart = ({ drivers, raceResult }: Props) => {
   const highestLaps = useMemo(

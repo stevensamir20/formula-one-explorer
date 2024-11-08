@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../state/store";
@@ -15,7 +15,7 @@ import Loader from "../../components/Loader";
 import LineChart from "../../components/LineChart";
 import RadarChart from "../../components/RadarChart";
 
-const RaceDetails = () => {
+const RaceDetails: React.FC = () => {
   const { seasonId, raceId } = useParams<{
     seasonId: string;
     raceId: string;
