@@ -31,10 +31,12 @@ const RaceDetails: React.FC = () => {
   const [pinnedDrivers, setPinnedDrivers] = useState<string[]>([]);
 
   useEffect(() => {
-    if (seasonId && raceId && !raceResult.length) {
+    if (seasonId && raceId) {
       dispatch(fetchRaceDetails({ seasonId, raceId }));
     }
+  }, [dispatch, seasonId, raceId]);
 
+  useEffect(() => {
     if (raceResult.length > 0) {
       const raceRows = raceResult
         .map((result) => ({
@@ -49,7 +51,7 @@ const RaceDetails: React.FC = () => {
         .sort((a, b) => parseInt(a.position) - parseInt(b.position));
       setRaceRows(raceRows);
     }
-  }, [dispatch, raceResult, seasonId, raceId]);
+  }, [raceResult]);
 
   const handleDriverPin = (driverId: string) => {
     setPinnedDrivers((prev: string[]) => {
@@ -62,9 +64,11 @@ const RaceDetails: React.FC = () => {
     });
   };
 
+  if (loading) {
+    return <Loader />;
+  }
   return (
     <>
-      {loading && <Loader />}
       {raceRows.length !== 0 && (
         <Stack spacing={4} mt={5}>
           <Stack>
