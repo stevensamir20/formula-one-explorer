@@ -1,0 +1,37 @@
+* {
+  font-family: monospace !important;
+}
+
+a {
+  text-decoration: none;
+
+  &:hover {
+    opacity: 0.6;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container-title {
+  color: #9d1414;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+.toggle-buttons {
+  button[aria-pressed="true"] {
+    background-color: #9d1414;
+    color: white;
+
+    &:hover {
+      background-color: #9d5757;
+    }
+  }
+}
+
+.MuiToolbar-root {
+  padding-left: 70px !important;
+}

@@ -1,0 +1,15 @@
+export const ERROR_SELECTOR = '[data-testid="error"]';
+export const LOADER_SELECTOR = '[data-testid="loader"]';
+export const TABLE_ROW_SELECTOR = "[data-testid='table-row']";
+export const TABLE_CELL_SELECTOR = ".MuiTableCell-root";
+export const TABLE_EXTERNAL_LINK_SELECTOR = '[data-testid="external-link"]';
+export const CARD_EXTERNAL_LINK_SELECTOR = '[data-testid="external-link"]';
+export const CARD_VIEW_BUTTON_SELECTOR = '[data-testid="card-view-button"]';
+export const TABLE_VIEW_BUTTON_SELECTOR = '[data-testid="table-view-button"]';
+export const CARD_BUTTON_SELECTOR = '[data-testid="card-button"]';
+export const CARD_SELECTOR = '[data-testid="card"]';
+export const CARD_LIST_ITEM_SELECTOR = '[data-testid="card-list-item"]';
+export const PIN_CHECKBOX_SELECTOR = '[data-testid="pin-checkbox"]';
+export const ERROR_HIGHLIGHT_SELECTOR = '[data-testid="error-highlight"]';
+export const LINE_CHART_SELECTOR = '[data-testid="line-chart"]';
+export const RADAR_CHART_SELECTOR = '[data-testid="radar-chart"]';
