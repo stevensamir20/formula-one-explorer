@@ -14,7 +14,6 @@ describe("Seasons API Request", () => {
       }).as("getEntries");
 
       cy.get("@getEntries").should((response: any) => {
-        console.log(response.body);
         expect(response.status).to.eq(200);
         expect(response.body).to.deep.eq(seasons);
       });
@@ -58,7 +57,6 @@ describe("Race result API request", () => {
       }).as("getEntries");
 
       cy.get("@getEntries").should((response: any) => {
-        console.log(response.body);
         expect(response.status).to.eq(200);
         expect(response.body).to.deep.eq(raceResults);
       });
